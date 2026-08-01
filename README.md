@@ -24,5 +24,6 @@ export CPATH="$HOME/.local/include${CPATH:+:$CPATH}"
 `PREFIX`, `DESTDIR`, and `INCLUDEDIR` are supported. There are no runtime
 dependencies, generated headers, or combined catalogue header.
 
-The public headers are `types`, `utility`, `contract`, `debug`,
-`disjoint_set`, `fenwick_tree`, `segment_tree`, `modint`, and `kmp`.
+The public headers are `types`, `utility`, `contract`, `disjoint_set`,
+`fenwick_tree`, `segment_tree`, `modint`, and `kmp`. Developer diagnostics live
+in the separate [`peek`](https://github.com/njlane314/peek) library.

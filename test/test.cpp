@@ -1,7 +1,6 @@
 #define LOCAL
 
 #include <cp/contract>
-#include <cp/debug>
 #include <cp/disjoint_set>
 #include <cp/fenwick_tree>
 #include <cp/kmp>
@@ -13,14 +12,11 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <numeric>
 #include <random>
-#include <sstream>
 #include <span>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -53,30 +49,10 @@ cp::index_type pick(std::mt19937& random, cp::index_type bound) {
     return static_cast<cp::index_type>(random() % static_cast<std::uint32_t>(bound));
 }
 
-void test_contract_and_debug() {
+void test_contract() {
     int message_calls = 0;
     CP_EXPECT(2 + 2 == 4, (++message_calls, "unused"));
     assert(message_calls == 0);
-
-    std::ostringstream output;
-    std::streambuf* previous = std::cerr.rdbuf(output.rdbuf());
-    const std::string text = "a\n\"b";
-    const std::pair<int, bool> pair{4, true};
-    const std::tuple<std::string, char> tuple{"ok", 'x'};
-    std::vector<int> range(65);
-    std::iota(range.begin(), range.end(), 0);
-    const char* missing = nullptr;
-    CP_DEBUG(text, pair, tuple, range, missing);
-    std::cerr.rdbuf(previous);
-
-    const std::string rendered = output.str();
-    assert(rendered.starts_with("[test.cpp:"));
-    assert(rendered.find("text, pair, tuple, range, missing = (") != std::string::npos);
-    assert(rendered.find("\"a\\n\\\"b\"") != std::string::npos);
-    assert(rendered.find("(4, true)") != std::string::npos);
-    assert(rendered.find("(\"ok\", 'x')") != std::string::npos);
-    assert(rendered.find(", ...]") != std::string::npos);
-    assert(rendered.find("nullptr") != std::string::npos);
 }
 
 void test_disjoint_set() {
@@ -269,7 +245,7 @@ int contract_case(std::string_view name) {
 
 int main(int argc, char** argv) {
     if (argc == 2) return contract_case(argv[1]);
-    test_contract_and_debug();
+    test_contract();
     test_disjoint_set();
     test_fenwick_tree();
     test_segment_tree();

@@ -13,7 +13,7 @@ CXX := /usr/local/opt/llvm/bin/clang++
 endif
 endif
 
-headers := contract debug disjoint_set fenwick_tree kmp modint segment_tree types utility
+headers := contract disjoint_set fenwick_tree kmp modint segment_tree types utility
 build := .build
 include_dir := $(build)/include
 tests := $(build)/test $(build)/release
