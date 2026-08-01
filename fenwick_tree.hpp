@@ -1,11 +1,27 @@
 #pragma once
 
-#include "cp/contract"
-#include "cp/types"
+// <cp/fenwick_tree.hpp> — point updates and additive range sums
+//
+//   cp::fenwick_tree<cp::i64> sums(values);
+//   sums.add(position, delta);
+//   auto answer = sums.sum(first, last);
+//
+// Indices: zero-based
+// Ranges:  [first, last)
+// Build:   O(n)
+// add:     O(log n)
+// sum:     O(log n)
+//
+// Keywords: BIT, binary indexed tree, prefix sum
 
+#include "cp/contract.hpp"
+#include "cp/types.hpp"
+
+#include <concepts>
 #include <cstddef>
 #include <limits>
-#include <span>
+#include <ranges>
+#include <utility>
 #include <vector>
 
 namespace cp {
@@ -19,8 +35,16 @@ template <class T> class fenwick_tree {
     fenwick_tree() : data_(1, T{}) {}
     explicit fenwick_tree(index_type count)
         : size_(checked_size(count)), data_(offset(size_) + 1, T{}) {}
-    explicit fenwick_tree(std::span<const T> values) : fenwick_tree(checked_size(values.size())) {
-        for (index_type i = 0; i < size_; ++i) data_[offset(i) + 1] = values[offset(i)];
+
+    template <std::ranges::input_range Range>
+        requires std::ranges::sized_range<Range> &&
+                 std::convertible_to<std::ranges::range_reference_t<Range>, T>
+    explicit fenwick_tree(Range&& values)
+        : fenwick_tree(
+              checked_size(static_cast<std::size_t>(std::ranges::size(values)))) {
+        std::size_t position = 1;
+        for (auto&& value : values)
+            data_[position++] = static_cast<T>(std::forward<decltype(value)>(value));
         for (std::size_t i = 1; i <= offset(size_); ++i) {
             const std::size_t parent = i + low_bit(i);
             if (parent <= offset(size_)) data_[parent] += data_[i];
@@ -73,10 +97,12 @@ template <class T> class fenwick_tree {
         CP_EXPECT(0 <= position && position < size_, "fenwick_tree: invalid position");
     }
     void expect_boundary(index_type boundary) const {
-        CP_EXPECT(0 <= boundary && boundary <= size_, "fenwick_tree: invalid boundary");
+        CP_EXPECT(0 <= boundary && boundary <= size_,
+                  "fenwick_tree::prefix_sum: invalid boundary");
     }
     void expect_range(index_type first, index_type last) const {
-        CP_EXPECT(0 <= first && first <= last && last <= size_, "fenwick_tree: invalid range");
+        CP_EXPECT(0 <= first && first <= last && last <= size_,
+                  "fenwick_tree::sum: invalid range");
     }
 };
 

@@ -1,16 +1,27 @@
 #pragma once
 
-#include "cp/contract"
-#include "cp/types"
+// <cp/modint.hpp> — integers modulo a compile-time constant
+//
+//   using mint = cp::modint<1'000'000'007>;
+//   mint value = 2;
+//   auto power = value.pow(10);
+//   if (auto inverse = value.try_inverse()) { /* ... */ }
+//
+// Arithmetic:  O(1)
+// pow:         O(log exponent)
+// try_inverse: O(log modulus)
+
+#include "cp/types.hpp"
 
 #include <concepts>
 #include <cstdint>
+#include <optional>
 #include <type_traits>
 
 namespace cp {
 
-// Modular integer with a compile-time 32-bit modulus. Inverse and division
-// require the divisor to be coprime to the modulus; LOCAL checks this precondition.
+// Modular integer with a compile-time 32-bit modulus. try_inverse() returns
+// std::nullopt when the value and modulus are not coprime.
 template <std::uint32_t Modulus> class modint {
     static_assert(Modulus >= 2, "modint modulus must be at least two");
 
@@ -44,8 +55,6 @@ template <std::uint32_t Modulus> class modint {
                                             Modulus);
         return *this;
     }
-    constexpr modint& operator/=(modint other) { return *this *= other.inverse(); }
-
     [[nodiscard]] constexpr modint operator+() const { return *this; }
     [[nodiscard]] constexpr modint operator-() const {
         return value_ == 0 ? modint{} : raw(Modulus - value_);
@@ -60,7 +69,7 @@ template <std::uint32_t Modulus> class modint {
         }
         return result;
     }
-    [[nodiscard]] constexpr modint inverse() const {
+    [[nodiscard]] constexpr std::optional<modint> try_inverse() const {
         std::int64_t a = value_;
         std::int64_t b = Modulus;
         std::int64_t x = 1;
@@ -74,18 +83,15 @@ template <std::uint32_t Modulus> class modint {
             x = y;
             y = next_x;
         }
-        CP_EXPECT(a == 1, "modint: value has no multiplicative inverse");
+        if (a != 1) return std::nullopt;
         x %= static_cast<std::int64_t>(Modulus);
         if (x < 0) x += Modulus;
         return raw(static_cast<std::uint32_t>(x));
     }
-
     friend constexpr bool operator==(modint, modint) = default;
     friend constexpr modint operator+(modint left, modint right) { return left += right; }
     friend constexpr modint operator-(modint left, modint right) { return left -= right; }
     friend constexpr modint operator*(modint left, modint right) { return left *= right; }
-    friend constexpr modint operator/(modint left, modint right) { return left /= right; }
-
   private:
     std::uint32_t value_ = 0;
 

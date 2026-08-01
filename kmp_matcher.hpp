@@ -1,7 +1,18 @@
 #pragma once
 
-#include "cp/contract"
-#include "cp/types"
+// <cp/kmp_matcher.hpp> — linear-time byte-string pattern matching
+//
+//   cp::kmp_matcher matcher(pattern);
+//   auto positions = matcher.find_all(text);
+//
+// Indices: zero-based
+// Build:   O(pattern length)
+// find_all: O(text length)
+//
+// Keywords: KMP, prefix function, substring search
+
+#include "cp/contract.hpp"
+#include "cp/types.hpp"
 
 #include <cstddef>
 #include <limits>
@@ -28,6 +39,10 @@ class kmp_matcher {
     }
 
     [[nodiscard]] std::string_view pattern() const noexcept { return pattern_; }
+    [[nodiscard]] index_type size() const noexcept {
+        return static_cast<index_type>(prefix_.size());
+    }
+    [[nodiscard]] bool empty() const noexcept { return pattern_.empty(); }
     [[nodiscard]] const std::vector<index_type>& prefix_table() const noexcept { return prefix_; }
 
     [[nodiscard]] std::vector<index_type> find_all(std::string_view text) const {
@@ -59,12 +74,10 @@ class kmp_matcher {
     std::string pattern_;
     std::vector<index_type> prefix_;
 
-    [[nodiscard]] index_type size() const noexcept {
-        return static_cast<index_type>(prefix_.size());
-    }
     static index_type checked_size(std::size_t count) {
         if (count > static_cast<std::size_t>(std::numeric_limits<index_type>::max()))
-            detail::contract_fail("count <= max(index_type)", "kmp: input is too large");
+            detail::contract_fail("count <= max(index_type)",
+                                  "kmp_matcher: input is too large");
         return static_cast<index_type>(count);
     }
     static std::size_t offset(index_type index) noexcept {

@@ -1,7 +1,20 @@
 #pragma once
 
-#include "cp/contract"
-#include "cp/types"
+// <cp/disjoint_set.hpp> — union-find with component sizes
+//
+//   cp::disjoint_set components(count);
+//   components.merge(first, second);
+//   if (components.same(first, second)) { /* ... */ }
+//
+// Indices: zero-based
+// Build:   O(n)
+// find:    amortized O(alpha(n))
+// merge:   amortized O(alpha(n))
+//
+// Keywords: DSU, union-find, dynamic connectivity
+
+#include "cp/contract.hpp"
+#include "cp/types.hpp"
 
 #include <algorithm>
 #include <cstddef>
@@ -23,7 +36,7 @@ class disjoint_set {
     [[nodiscard]] bool empty() const noexcept { return parent_or_size_.empty(); }
     [[nodiscard]] index_type component_count() const noexcept { return component_count_; }
 
-    [[nodiscard]] index_type find(index_type element) {
+    [[nodiscard]] index_type find(index_type element) const {
         expect_element(element);
         index_type root = element;
         while (entry(root) >= 0) root = entry(root);
@@ -46,14 +59,14 @@ class disjoint_set {
         return true;
     }
 
-    [[nodiscard]] bool same(index_type first, index_type second) {
+    [[nodiscard]] bool same(index_type first, index_type second) const {
         return find(first) == find(second);
     }
-    [[nodiscard]] index_type component_size(index_type element) {
+    [[nodiscard]] index_type component_size(index_type element) const {
         return -entry(find(element));
     }
 
-    [[nodiscard]] std::vector<std::vector<index_type>> groups() {
+    [[nodiscard]] std::vector<std::vector<index_type>> groups() const {
         std::vector<std::vector<index_type>> result(static_cast<std::size_t>(size()));
         for (index_type element = 0; element < size(); ++element)
             result[offset(find(element))].push_back(element);
@@ -64,7 +77,7 @@ class disjoint_set {
     }
 
   private:
-    std::vector<index_type> parent_or_size_;
+    mutable std::vector<index_type> parent_or_size_;
     index_type component_count_ = 0;
 
     static std::size_t checked_size(index_type count) {
@@ -74,7 +87,7 @@ class disjoint_set {
     static std::size_t offset(index_type index) noexcept {
         return static_cast<std::size_t>(index);
     }
-    index_type& entry(index_type index) noexcept { return parent_or_size_[offset(index)]; }
+    index_type& entry(index_type index) const noexcept { return parent_or_size_[offset(index)]; }
     void expect_element(index_type element) const {
         CP_EXPECT(0 <= element && element < size(), "disjoint_set: invalid element");
     }

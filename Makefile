@@ -13,7 +13,8 @@ CXX := /usr/local/opt/llvm/bin/clang++
 endif
 endif
 
-headers := contract disjoint_set fenwick_tree kmp modint segment_tree types utility
+headers := contract.hpp coordinate_compressor.hpp disjoint_set.hpp fenwick_tree.hpp \
+	kmp_matcher.hpp modint.hpp recursive.hpp segment_tree.hpp types.hpp utility.hpp
 build := .build
 include_dir := $(build)/include
 tests := $(build)/test $(build)/release
@@ -26,13 +27,20 @@ check: $(tests)
 		printf '#include <cp/%s>\nint main() {}\n' "$$header" | \
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - || exit; \
 	done
+	@if printf '#include <cp/contract.hpp>\nint main() { CP_EXPECT(true, 42); }\n' | \
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - \
+		>$(build)/contract-type.log 2>&1; then \
+		exit 1; \
+	fi
 	@$(build)/test
 	@$(build)/release
 	@set -e; for test_case in \
 		'disjoint-size|disjoint_set: negative size' \
 		'fenwick-index|fenwick_tree: invalid position' \
-		'segment-range|segment_tree: invalid range' \
-		'modint-inverse|modint: value has no multiplicative inverse'; do \
+		'segment-range|segment_tree::fold: invalid range' \
+		'compressor-rank|coordinate_compressor::rank: value is absent' \
+		'compressor-value|coordinate_compressor::value: invalid position' \
+		'compressor-size|coordinate_compressor: input is too large'; do \
 		mode=$${test_case%%|*}; message=$${test_case#*|}; output=$(build)/contract-$$mode.log; \
 		if (ulimit -c 0; $(build)/test "$$mode") >"$$output" 2>&1; then exit 1; fi; \
 		grep -Fq "cp: $$message" "$$output"; grep -Fq '  expected: ' "$$output"; \
