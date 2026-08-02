@@ -11,4 +11,4 @@
 // pow:         O(log exponent)
 // try_inverse: O(log modulus)
 
-#include <cp/detail/modint.hpp>
+#include <cp/src/modint.hpp>

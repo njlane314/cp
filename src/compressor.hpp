@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cp/detail/contract.hpp>
-#include <cp/detail/types.hpp>
+#include <cp/src/contract.hpp>
+#include <cp/src/types.hpp>
 
 #include <algorithm>
 #include <concepts>

@@ -14,4 +14,4 @@
 //
 // Recursive callables must state their return type explicitly.
 
-#include <cp/detail/recursive.hpp>
+#include <cp/src/recursive.hpp>

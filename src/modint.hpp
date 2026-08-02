@@ -1,6 +1,6 @@
 #pragma once
 
-#include <cp/detail/types.hpp>
+#include <cp/src/types.hpp>
 
 #include <concepts>
 #include <cstdint>

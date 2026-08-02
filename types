@@ -7,4 +7,4 @@
 //
 // Public indices are signed and zero-based throughout the library.
 
-#include <cp/detail/types.hpp>
+#include <cp/src/types.hpp>

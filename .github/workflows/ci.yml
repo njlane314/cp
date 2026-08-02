@@ -9,4 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: make check
+        with:
+          path: libcp
+      - uses: actions/checkout@v4
+        with:
+          repository: njlane314/tst
+          ref: 857d754f4b79e4500615816e84d3c0012efc3564
+          path: tst
+      - run: make -C libcp check

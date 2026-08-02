@@ -7,4 +7,4 @@
 // Define LOCAL for diagnostic checks. Submission builds preserve type checking
 // but evaluate neither macro argument.
 
-#include <cp/detail/contract.hpp>
+#include <cp/src/contract.hpp>

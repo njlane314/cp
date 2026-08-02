@@ -14,4 +14,4 @@
 //
 // Keywords: BIT, binary indexed tree, prefix sum
 
-#include <cp/detail/fenwick.hpp>
+#include <cp/src/fenwick.hpp>

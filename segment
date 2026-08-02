@@ -14,4 +14,4 @@
 //
 // Keywords: range query, associative operation, monoid
 
-#include <cp/detail/segment.hpp>
+#include <cp/src/segment.hpp>

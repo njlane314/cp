@@ -13,4 +13,4 @@
 //
 // Keywords: DSU, union-find, dynamic connectivity
 
-#include <cp/detail/disjoint.hpp>
+#include <cp/src/disjoint.hpp>

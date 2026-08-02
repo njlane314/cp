@@ -15,4 +15,4 @@
 // Precondition: rank(x) requires x to occur in the construction range.
 // Round trip: value(rank(x)) is comparator-equivalent to x.
 
-#include <cp/detail/compressor.hpp>
+#include <cp/src/compressor.hpp>

@@ -19,10 +19,20 @@ git submodule add https://github.com/njlane314/libcp include/cp
 Or install it in the usual UNIX layout:
 
 ```sh
-make check
 make install PREFIX="$HOME/.local"
 export CPATH="$HOME/.local/include${CPATH:+:$CPATH}"
 ```
+
+Development tests use the sibling
+[`tst`](https://github.com/njlane314/tst) library:
+
+```sh
+git clone https://github.com/njlane314/tst ../tst
+make check
+```
+
+Each public header has its own isolated `tst` executable. The check also
+compiles every public and private header independently.
 
 `PREFIX`, `DESTDIR`, and `INCLUDEDIR` are supported. There are no runtime
 dependencies, generated headers, aliases, or combined catalogue header.
@@ -34,7 +44,7 @@ resize implicitly, and queries are `const` whenever they are logically read-only
 The public headers are `types`, `utility`, `contract`, `disjoint`, `fenwick`,
 `segment`, `modint`, `kmp`, `recursive`, and `compressor`. Each starts with a
 compact synopsis and complexity reference. Its implementation lives in the
-same-word `.hpp` file under `detail`, retaining reliable editor syntax
-highlighting without exposing a second public spelling. Paths under `cp/detail`
+same-word `.hpp` file under `src`, retaining reliable editor syntax
+highlighting without exposing a second public spelling. Paths under `cp/src`
 are private. Developer diagnostics live in the separate
 [`peek`](https://github.com/njlane314/peek) library.

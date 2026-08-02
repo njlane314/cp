@@ -11,4 +11,4 @@
 //
 // Keywords: KMP, prefix function, substring search
 
-#include <cp/detail/kmp.hpp>
+#include <cp/src/kmp.hpp>

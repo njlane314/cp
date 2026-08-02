@@ -1,6 +1,7 @@
 CXX ?= c++
 CPPFLAGS ?=
 CXXFLAGS ?= -std=c++20 -Wall -Wextra -Wpedantic -Werror
+TSTDIR ?= ../tst
 PREFIX ?= /usr/local
 INCLUDEDIR ?= $(PREFIX)/include
 LICENSEDIR ?= $(PREFIX)/share/licenses/libcp
@@ -14,11 +15,15 @@ endif
 endif
 
 headers := contract compressor disjoint fenwick kmp modint recursive segment types utility
-detail_headers := $(addprefix detail/,$(addsuffix .hpp,$(headers)))
-all_headers := $(headers) $(detail_headers)
+source_headers := $(addprefix src/,$(addsuffix .hpp,$(headers)))
+all_headers := $(headers) $(source_headers)
 build := .build
 include_dir := $(build)/include
-tests := $(build)/test $(build)/release
+test_build := $(build)/tests
+tst_header := $(TSTDIR)/tst.hpp
+test_bins := $(addprefix $(test_build)/,$(headers))
+release_test := $(test_build)/contract_release
+tests := $(test_bins) $(release_test)
 
 .DEFAULT_GOAL := check
 .PHONY: check install clean
@@ -33,17 +38,19 @@ check: $(tests)
 		>$(build)/contract-type.log 2>&1; then \
 		exit 1; \
 	fi
-	@$(build)/test
-	@$(build)/release
+	@for test_binary in $(tests); do "$$test_binary" || exit; done
 	@set -e; for test_case in \
-		'disjoint-size|disjoint_set: negative size' \
-		'fenwick-index|fenwick_tree: invalid position' \
-		'segment-range|segment_tree::fold: invalid range' \
-		'compressor-rank|coordinate_compressor::rank: value is absent' \
-		'compressor-value|coordinate_compressor::value: invalid position' \
-		'compressor-size|coordinate_compressor: input is too large'; do \
-		mode=$${test_case%%|*}; message=$${test_case#*|}; output=$(build)/contract-$$mode.log; \
-		if (ulimit -c 0; $(build)/test "$$mode") >"$$output" 2>&1; then exit 1; fi; \
+		'contract|failure|contract test failure' \
+		'disjoint|negative-size|disjoint_set: negative size' \
+		'fenwick|invalid-index|fenwick_tree: invalid position' \
+		'segment|invalid-range|segment_tree::fold: invalid range' \
+		'compressor|missing-rank|coordinate_compressor::rank: value is absent' \
+		'compressor|invalid-value|coordinate_compressor::value: invalid position' \
+		'compressor|oversized-input|coordinate_compressor: input is too large'; do \
+		header=$${test_case%%|*}; remainder=$${test_case#*|}; \
+		mode=$${remainder%%|*}; message=$${remainder#*|}; \
+		output=$(build)/contract-$$header-$$mode.log; \
+		if (ulimit -c 0; $(test_build)/$$header "$$mode") >"$$output" 2>&1; then exit 1; fi; \
 		grep -Fq "cp: $$message" "$$output"; grep -Fq '  expected: ' "$$output"; \
 		grep -Fq '  at: ' "$$output"; \
 	done
@@ -55,19 +62,23 @@ check: $(tests)
 		-x c++ -fsyntax-only - || exit; \
 	done
 
-$(tests): $(build)/%: test/%.cpp $(all_headers) | $(include_dir)/cp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) $< -o $@
+$(test_bins): $(test_build)/%: test/%.cpp $(all_headers) $(tst_header) | $(include_dir)/cp $(test_build)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DLOCAL -I$(include_dir) -I"$(TSTDIR)" $< -o $@
 
-$(build)/test: test/test.cpp
+$(release_test): test/contract_release.cpp $(all_headers) $(tst_header) | $(include_dir)/cp $(test_build)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -ULOCAL -I$(include_dir) -I"$(TSTDIR)" $< -o $@
+
+$(test_build):
+	mkdir -p $@
 
 $(include_dir)/cp:
 	mkdir -p $(@D)
 	ln -s ../.. $@
 
 install:
-	install -d "$(DESTDIR)$(INCLUDEDIR)/cp/detail" "$(DESTDIR)$(LICENSEDIR)"
+	install -d "$(DESTDIR)$(INCLUDEDIR)/cp/src" "$(DESTDIR)$(LICENSEDIR)"
 	install -m 0644 $(headers) "$(DESTDIR)$(INCLUDEDIR)/cp"
-	install -m 0644 $(detail_headers) "$(DESTDIR)$(INCLUDEDIR)/cp/detail"
+	install -m 0644 $(source_headers) "$(DESTDIR)$(INCLUDEDIR)/cp/src"
 	install -m 0644 LICENSE "$(DESTDIR)$(LICENSEDIR)/LICENSE"
 
 clean:
