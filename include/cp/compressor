@@ -1,18 +1,47 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/compressor> — sorted ranks for arbitrary values
+// <cp/compressor> — sorted, zero-based ranks for arbitrary values
 //
-//   cp::coordinate_compressor coordinates(values);
-//   auto compressed = coordinates.rank(value);
-//   const auto original = coordinates.value(compressed);
+// Example
+// -------
+//   #include <cp/compressor>
+//   #include <array>
 //
-// Indices: zero-based
-// Build:   O(n log n)
-// rank:    O(log n)
-// value:   O(1)
+//   const cp::coordinate_compressor coordinates(
+//       std::array{40, 10, 40, -5});
 //
-// Keywords: coordinate compression, rank, discretization
-// Precondition: rank(x) requires x to occur in the construction range.
-// Round trip: value(rank(x)) is comparator-equivalent to x.
+//   [[maybe_unused]] const cp::index_type rank = coordinates.rank(40); // 2
+//   [[maybe_unused]] const int value = coordinates.value(0);           // -5
+//
+// Compact synopsis
+// ----------------
+//   coordinate_compressor<T, Compare>()
+//   explicit coordinate_compressor<T, Compare>(input_range, compare = {})
+//   size(), empty()
+//   rank(value)       zero-based rank
+//   value(position)   stored representative
+//
+// Ordering and contracts
+// ----------------------
+// Values are sorted with Compare and deduplicated by comparator equivalence:
+// neither compare(a, b) nor compare(b, a). Compare must impose a strict weak
+// ordering. Construction accepts one-pass ranges whose references are
+// convertible to T; class template argument deduction uses the range value
+// type.
+//
+// rank(x) requires a comparator-equivalent value to be present. value(i)
+// requires 0 <= i < size(). LOCAL builds diagnose either violation; submission
+// builds assume the contracts. For equivalent but unequal inputs, no particular
+// representative is promised, although value(rank(x)) is comparator-equivalent
+// to x. Oversized input is rejected in every build.
+//
+// Complexity and storage
+// ----------------------
+// For n input values and u distinct values, construction is O(n log n), rank is
+// O(log u), and value, size, and empty are O(1). The compressor retains u
+// values and one Compare object; vector capacity may remain O(n) after
+// deduplication.
 
 #include <cp/src/compressor.hpp>

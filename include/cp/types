@@ -1,10 +1,36 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
 // <cp/types> — shared integer and index types
 //
-//   cp::index_type position = 0;
-//   cp::i64 total = 0;
+// These aliases give every component the same signed index convention and
+// concise exact-width integer names.
 //
-// Public indices are signed and zero-based throughout the library.
+// Example
+// -------
+//   #include <cp/types>
+//
+//   [[maybe_unused]] cp::index_type position = 0;
+//   [[maybe_unused]] cp::index_type missing = cp::npos;
+//   [[maybe_unused]] cp::i64 total = 0;
+//
+// Compact synopsis
+// ----------------
+//   using index_type = int;
+//   inline constexpr index_type npos = -1;
+//   using i64 = std::int64_t;
+//   using u64 = std::uint64_t;
+//   using i128 = __int128_t;    // when __SIZEOF_INT128__ is defined
+//   using u128 = __uint128_t;   // when __SIZEOF_INT128__ is defined
+//
+// Semantics
+// ---------
+// index_type is the library's signed, zero-based public index type. npos is its
+// distinguished negative sentinel and is not a valid index. i64 and u64 are
+// exact-width 64-bit aliases. The 128-bit aliases use compiler extension types
+// and exist only when the compiler advertises their availability.
+//
+// Runtime cost: none; these are aliases and a constant-initialized sentinel.
 
 #include <cp/src/types.hpp>

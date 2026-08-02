@@ -1,14 +1,39 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/kmp> — linear-time byte-string pattern matching
+// <cp/kmp> — Knuth–Morris–Pratt matching for byte strings
 //
-//   cp::kmp_matcher matcher(pattern);
-//   auto positions = matcher.find_all(text);
+// Example
+// -------
+//   #include <cp/kmp>
 //
-// Indices: zero-based
-// Build:   O(pattern length)
-// find_all: O(text length)
+//   const cp::kmp_matcher matcher("aba");
+//   [[maybe_unused]] const auto matches = matcher.find_all("ababa"); // {0, 2}
 //
-// Keywords: KMP, prefix function, substring search
+// Compact synopsis
+// ----------------
+//   explicit kmp_matcher(std::string pattern)
+//   pattern(), size(), empty()
+//   prefix_table()
+//   find_all(text)   vector of zero-based match positions
+//
+// Matching semantics
+// ------------------
+// The matcher owns its pattern. find_all returns every match in increasing
+// order, including overlapping matches. An empty pattern matches every
+// boundary: a text of length n produces positions 0 through n.
+//
+// Matching compares char values exactly; it performs no locale, encoding, or
+// Unicode interpretation. pattern() and prefix_table() expose matcher-owned
+// storage. prefix_table()[i] is the length of the longest proper prefix of
+// pattern[0, i + 1) that is also a suffix of that same range. Pattern and text
+// lengths must fit cp::index_type; oversized input is rejected in every build.
+//
+// Complexity and storage
+// ----------------------
+// For pattern length m, text length n, and k matches, construction is O(m) and
+// find_all is O(n + k). Accessors are O(1). The matcher stores O(m) characters
+// and indices; find_all returns O(k) additional storage.
 
 #include <cp/src/kmp.hpp>

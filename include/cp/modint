@@ -1,14 +1,45 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/modint> — integers modulo a compile-time constant
+// <cp/modint> — constexpr arithmetic modulo a compile-time 32-bit constant
 //
-//   using mint = cp::modint<1'000'000'007>;
-//   mint value = 2;
-//   auto power = value.pow(10);
-//   if (auto inverse = value.try_inverse()) { /* ... */ }
+// Example
+// -------
+//   #include <cp/modint>
 //
-// Arithmetic:  O(1)
-// pow:         O(log exponent)
-// try_inverse: O(log modulus)
+//   using mint = cp::modint<1'000'000'007U>;
+//
+//   const mint value = -3; // canonical residue Modulus - 3
+//   [[maybe_unused]] const mint power = value.pow(10);
+//   if (const auto inverse = value.try_inverse())
+//       [[maybe_unused]] const mint one = value * *inverse;
+//
+// Compact synopsis
+// ----------------
+//   modint<Modulus>()                   zero
+//   modint<Modulus>(integer)            normalized residue
+//   modulus(), value()
+//   +=, -=, *=, binary +, binary -, binary *, unary +, unary -, ==
+//   pow(std::uint64_t exponent)
+//   try_inverse()                       std::optional<modint>
+//
+// Arithmetic semantics
+// --------------------
+// Modulus must be at least 2. Integral inputs, including negative values, are
+// normalized to the canonical residue in [0, Modulus). Compiler-provided
+// 128-bit integers are accepted when available. Operands share a modulus
+// because the modulus is part of the type. All operations are constexpr.
+//
+// pow accepts a non-negative 64-bit exponent. try_inverse returns an inverse
+// exactly when the residue and modulus are coprime, so composite moduli are
+// supported; otherwise it returns std::nullopt. Division is deliberately absent
+// so non-invertibility cannot be ignored.
+//
+// Complexity and storage
+// ----------------------
+// Addition, subtraction, multiplication, and accessors are O(1). pow(e) is
+// O(log(e + 1)), and try_inverse is O(log Modulus). The object stores one
+// std::uint32_t residue and performs no dynamic allocation.
 
 #include <cp/src/modint.hpp>

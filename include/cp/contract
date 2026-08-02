@@ -1,10 +1,44 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/contract> — local checks for violated preconditions
+// <cp/contract> — opt-in diagnostics for violated preconditions
 //
-//   CP_EXPECT(0 <= position && position < size, "invalid position");
+// CP_EXPECT keeps library contracts visible in source without charging
+// submission builds for runtime checks.
 //
-// Define LOCAL for diagnostic checks. Submission builds preserve type checking
-// but evaluate neither macro argument.
+// Example
+// -------
+//   #include <cp/contract>
+//
+//   int element_at(const int* data, int size, int position) {
+//       CP_EXPECT(0 <= position && position < size,
+//                 "element_at: invalid position");
+//       return data[position];
+//   }
+//
+// Compact synopsis
+// ----------------
+//   CP_EXPECT(condition, message)
+//
+// Build modes
+// -----------
+// Define LOCAL before including this header, normally with -DLOCAL, to enable
+// diagnostics. An enabled check evaluates condition exactly once. If it
+// succeeds, message is not evaluated. If it fails, message is evaluated and
+// the message, stringized condition, source file, and source line are written
+// to stderr before std::abort() is called.
+//
+// Without LOCAL, both arguments remain compiled and type-checked, but neither
+// is evaluated at runtime. condition must support logical negation and message
+// must be convertible to std::string_view. Because evaluation differs between
+// modes, contract arguments should not be used for side effects.
+//
+// Cost
+// ----
+// An enabled successful check costs one condition evaluation. A disabled check
+// performs no runtime work. Failure does not return.
+//
+// Requires C++20 for std::source_location.
 
 #include <cp/src/contract.hpp>

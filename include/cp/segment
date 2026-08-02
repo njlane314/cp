@@ -1,17 +1,55 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
 // <cp/segment> — point replacement and associative range folds
 //
-//   auto ranges = cp::make_segment_tree(values, identity, combine);
-//   ranges.set(position, replacement);
-//   auto answer = ranges.fold(first, last);
+// A zero-based segment tree over a fixed-size sequence. fold(first, last)
+// preserves left-to-right order over the half-open range [first, last), so the
+// operation need not be commutative.
 //
-// Indices: zero-based
-// Ranges:  [first, last)
-// Build:   O(n)
-// set:     O(log n)
-// fold:    O(log n)
+// Example
+// -------
+//   #include <cp/segment>
+//   #include <limits>
 //
-// Keywords: range query, associative operation, monoid
+//   const int values[] = {8, 6, 7, 5};
+//   auto maximum = cp::make_segment_tree(
+//       values, std::numeric_limits<int>::lowest(),
+//       [](int left, int right) { return left < right ? right : left; });
+//
+//   [[maybe_unused]] const int before = maximum.fold(1, 4); // 7
+//   maximum.set(2, 4);
+//   [[maybe_unused]] const int after = maximum.fold(1, 4);  // 6
+//
+// Compact synopsis
+// ----------------
+//   explicit segment_tree<T, BinaryOperation>(count, identity = T{}, combine = {})
+//   explicit segment_tree<T, BinaryOperation>(sized_range, identity = T{}, combine = {})
+//   make_segment_tree(sized_range, identity, combine)
+//   size(), empty()                       sequence properties
+//   get(position)                         const reference to one value
+//   set(position, value)                  replace one value
+//   fold(first, last)                     fold over [first, last)
+//   fold_all()                            fold over the complete sequence
+//
+// Requirements and contracts
+// --------------------------
+// combine must be associative and identity must be a two-sided identity.
+// Empty ranges fold to identity. The default operation is std::plus<T>. Range
+// references must be convertible to T. make_segment_tree deduces T from
+// identity and stores a decayed copy or move of combine. Direct range
+// construction has no deduction guide, so name T explicitly or use the factory.
+//
+// count must be non-negative, positions must lie in [0, size()), and ranges
+// must satisfy 0 <= first <= last <= size(). Define LOCAL to diagnose these
+// violations; submission builds assume the contracts. An oversized range is
+// rejected in every build. The tree never resizes.
+//
+// Complexity and storage
+// ----------------------
+// Construction is O(n). set and fold are O(log n); get, fold_all, and
+// properties are O(1). Storage is 2b objects of type T, where b is the least
+// power of two not smaller than max(n, 1), plus the identity and operation.
 
 #include <cp/src/segment.hpp>

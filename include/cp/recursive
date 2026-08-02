@@ -1,17 +1,42 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
 // <cp/recursive> — recursive lambdas without std::function
 //
-//   auto dfs = cp::recursive(
-//       [&](auto& self, int vertex, int parent) -> void {
-//           for (int next : graph[vertex])
-//               if (next != parent) self(next, vertex);
+// Example
+// -------
+//   #include <cp/recursive>
+//
+//   const auto factorial = cp::recursive(
+//       [](const auto& self, unsigned value) -> unsigned {
+//           return value < 2 ? 1 : value * self(value - 1);
 //       });
-//   dfs(source, -1);
 //
-// Construction: O(1)
-// Call:         the wrapped callable's cost
+//   [[maybe_unused]] const unsigned result = factorial(10); // 3'628'800
 //
-// Recursive callables must state their return type explicitly.
+// Compact synopsis
+// ----------------
+//   explicit recursive<Function>(Function function)
+//   operator()(arguments...) &
+//   operator()(arguments...) const&
+//
+// Invocation semantics
+// --------------------
+// A call invokes the stored function as function(self, arguments...), where
+// self is the wrapper. Arguments are forwarded. Move-only and mutable callables
+// are supported, and const recursion is available when Function is
+// const-invocable. Construction and calls are constexpr when their underlying
+// operations permit it. Calls are noexcept when the underlying invocation is.
+//
+// A self-recursive generic lambda must state its return type explicitly, as in
+// the example. Captured references retain their ordinary lifetime requirements.
+// Recursion uses the normal call stack and performs no depth or cycle checks.
+//
+// Complexity and storage
+// ----------------------
+// Each wrapper call performs one std::invoke in addition to Function's work;
+// total time and stack depth follow the recursion. The wrapper stores one
+// Function directly and performs no allocation or type erasure.
 
 #include <cp/src/recursive.hpp>

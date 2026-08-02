@@ -1,16 +1,47 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/disjoint> — union-find with component sizes
+// <cp/disjoint> — disjoint-set union with component sizes
 //
-//   cp::disjoint_set components(count);
-//   components.merge(first, second);
-//   if (components.same(first, second)) { /* ... */ }
+// Maintains a partition of the zero-based elements [0, size()) using path
+// compression and union by size.
 //
-// Indices: zero-based
-// Build:   O(n)
-// find:    amortized O(alpha(n))
-// merge:   amortized O(alpha(n))
+// Example
+// -------
+//   #include <cp/disjoint>
 //
-// Keywords: DSU, union-find, dynamic connectivity
+//   cp::disjoint_set components(5);
+//   components.merge(0, 2);
+//   components.merge(2, 4);
+//
+//   [[maybe_unused]] const bool connected = components.same(0, 4); // true
+//   [[maybe_unused]] const auto extent = components.component_size(2); // 3
+//   [[maybe_unused]] const auto count = components.component_count();  // 3
+//
+// Compact synopsis
+// ----------------
+//   disjoint_set()                         empty partition
+//   explicit disjoint_set(count)           count singleton components
+//   size(), empty(), component_count()     partition properties
+//   find(element)                          representative of element
+//   merge(first, second)                   join; true iff previously separate
+//   same(first, second)                    connectivity query
+//   component_size(element)                size of element's component
+//   groups()                               complete partition as index vectors
+//
+// Contracts and ordering
+// ----------------------
+// count must be non-negative. Every element must lie in [0, size()). Define
+// LOCAL to diagnose violations; submission builds assume these preconditions.
+// Representatives are implementation details and may change after a merge.
+// Treat groups() as a partition: no component or member ordering is promised.
+// find() is logically const but may compress internal paths.
+//
+// Complexity and storage
+// ----------------------
+// Count construction is O(n). find, merge, same, and component_size take
+// amortized O(alpha(n)) time. groups takes O(n alpha(n)) time and O(n) output
+// space. Properties are O(1). The structure stores n index_type entries.
 
 #include <cp/src/disjoint.hpp>

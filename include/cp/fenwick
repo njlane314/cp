@@ -1,17 +1,52 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/fenwick> — point updates and additive range sums
+// <cp/fenwick> — additive point updates and range sums
 //
-//   cp::fenwick_tree<cp::i64> sums(values);
-//   sums.add(position, delta);
-//   auto answer = sums.sum(first, last);
+// A zero-based Fenwick tree over a fixed-size sequence. Prefixes and ranges are
+// half-open: prefix_sum(last) covers [0, last), and sum(first, last) covers
+// [first, last).
 //
-// Indices: zero-based
-// Ranges:  [first, last)
-// Build:   O(n)
-// add:     O(log n)
-// sum:     O(log n)
+// Example
+// -------
+//   #include <cp/fenwick>
 //
-// Keywords: BIT, binary indexed tree, prefix sum
+//   cp::fenwick_tree<long long> sums(5); // five zeroes
+//   sums.add(0, 4);
+//   sums.add(2, 7);
+//
+//   [[maybe_unused]] const auto prefix = sums.sum(0, 3); // 11
+//   sums.set(2, 1);
+//   [[maybe_unused]] const auto value = sums.get(2);     // 1
+//
+// Compact synopsis
+// ----------------
+//   fenwick_tree<T>()                        empty tree
+//   explicit fenwick_tree<T>(count)          count values initialized with T{}
+//   explicit fenwick_tree<T>(sized_range)    linear-time range construction
+//   size(), empty()                          sequence properties
+//   add(position, delta)                     value[position] += delta
+//   set(position, value)                     replace one value
+//   get(position)                            read one value
+//   prefix_sum(last)                         sum over [0, last)
+//   sum(first, last)                         sum over [first, last)
+//
+// Requirements and contracts
+// --------------------------
+// T{} must be the additive identity, += must describe associative commutative
+// accumulation, and subtraction must provide the corresponding difference.
+// Range references must be convertible to T; name T explicitly when
+// range-constructing because the class has no range deduction guide.
+//
+// count must be non-negative, positions must lie in [0, size()), boundaries in
+// [0, size()], and ranges must satisfy 0 <= first <= last <= size(). Define
+// LOCAL to diagnose these violations; submission builds assume the contracts.
+// An oversized range is rejected in every build. The tree never resizes.
+//
+// Complexity and storage
+// ----------------------
+// Construction is O(n). add, set, get, prefix_sum, and sum are O(log n).
+// Properties are O(1). Storage is n + 1 objects of type T.
 
 #include <cp/src/fenwick.hpp>

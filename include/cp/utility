@@ -1,10 +1,35 @@
+// SPDX-FileCopyrightText: 2026 njlane314
+// SPDX-License-Identifier: MIT
 #pragma once
 
-// <cp/utility> — small value-update helpers
+// <cp/utility> — conditional minimum and maximum assignment
 //
-//   cp::chmin(value, candidate);
-//   cp::chmax(value, candidate);
+// Example
+// -------
+//   #include <cp/utility>
 //
-// chmin/chmax: O(1)
+//   int best = 8;
+//   [[maybe_unused]] const bool lowered = cp::chmin(best, 3);  // best == 3
+//   [[maybe_unused]] const bool raised = cp::chmax(best, 10);  // best == 10
+//
+// Compact synopsis
+// ----------------
+//   template <class T>
+//   constexpr bool chmin(T& value, const T& candidate);
+//
+//   template <class T>
+//   constexpr bool chmax(T& value, const T& candidate);
+//
+// Semantics and requirements
+// --------------------------
+// chmin assigns candidate only when candidate < value. chmax assigns candidate
+// only when value < candidate. Each returns true exactly when it performs the
+// assignment; equality therefore never causes an update.
+//
+// T must support the indicated comparison and assignment from const T&.
+// Comparison and assignment exceptions propagate. Both functions may be used
+// in constant expressions when those operations permit it.
+//
+// Cost: exactly one comparison and, on an update, one assignment.
 
 #include <cp/src/utility.hpp>
