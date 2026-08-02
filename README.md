@@ -10,10 +10,11 @@ remain `cp`.
 #include <cp/fenwick>
 ```
 
-The repository itself can be the include directory:
+Use the checkout directly through its conventional `include/` directory:
 
 ```sh
-git submodule add https://github.com/njlane314/libcp include/cp
+git submodule add https://github.com/njlane314/libcp libcp
+c++ -Ilibcp/include main.cpp
 ```
 
 Or install it in the usual UNIX layout:
@@ -44,7 +45,7 @@ resize implicitly, and queries are `const` whenever they are logically read-only
 The public headers are `types`, `utility`, `contract`, `disjoint`, `fenwick`,
 `segment`, `modint`, `kmp`, `recursive`, and `compressor`. Each starts with a
 compact synopsis and complexity reference. Its implementation lives in the
-same-word `.hpp` file under `src`, retaining reliable editor syntax
-highlighting without exposing a second public spelling. Paths under `cp/src`
+same-word `.hpp` file under `include/cp/src`, retaining reliable editor syntax
+highlighting without exposing a second public spelling. Paths below `cp/src`
 are private. Developer diagnostics live in the separate
 [`peek`](https://github.com/njlane314/peek) library.

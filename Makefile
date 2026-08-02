@@ -15,10 +15,13 @@ endif
 endif
 
 headers := contract compressor disjoint fenwick kmp modint recursive segment types utility
-source_headers := $(addprefix src/,$(addsuffix .hpp,$(headers)))
-all_headers := $(headers) $(source_headers)
+include_root := include
+public_dir := $(include_root)/cp
+header_paths := $(headers) $(addprefix src/,$(addsuffix .hpp,$(headers)))
+public_headers := $(addprefix $(public_dir)/,$(headers))
+source_headers := $(addprefix $(public_dir)/src/,$(addsuffix .hpp,$(headers)))
+all_headers := $(public_headers) $(source_headers)
 build := .build
-include_dir := $(build)/include
 test_build := $(build)/tests
 tst_header := $(TSTDIR)/tst.hpp
 test_bins := $(addprefix $(test_build)/,$(headers))
@@ -29,12 +32,12 @@ tests := $(test_bins) $(release_test)
 .PHONY: check install clean
 
 check: $(tests)
-	@for header in $(all_headers); do \
+	@for header in $(header_paths); do \
 		printf '#include <cp/%s>\nint main() {}\n' "$$header" | \
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - || exit; \
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_root) -x c++ -fsyntax-only - || exit; \
 	done
 	@if printf '#include <cp/contract>\nint main() { CP_EXPECT(true, 42); }\n' | \
-		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - \
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_root) -x c++ -fsyntax-only - \
 		>$(build)/contract-type.log 2>&1; then \
 		exit 1; \
 	fi
@@ -62,22 +65,18 @@ check: $(tests)
 		-x c++ -fsyntax-only - || exit; \
 	done
 
-$(test_bins): $(test_build)/%: test/%.cpp $(all_headers) $(tst_header) | $(include_dir)/cp $(test_build)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DLOCAL -I$(include_dir) -I"$(TSTDIR)" $< -o $@
+$(test_bins): $(test_build)/%: test/%.cpp $(all_headers) $(tst_header) | $(test_build)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -DLOCAL -I$(include_root) -I"$(TSTDIR)" $< -o $@
 
-$(release_test): test/contract_release.cpp $(all_headers) $(tst_header) | $(include_dir)/cp $(test_build)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -ULOCAL -I$(include_dir) -I"$(TSTDIR)" $< -o $@
+$(release_test): test/contract_release.cpp $(all_headers) $(tst_header) | $(test_build)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -ULOCAL -I$(include_root) -I"$(TSTDIR)" $< -o $@
 
 $(test_build):
 	mkdir -p $@
 
-$(include_dir)/cp:
-	mkdir -p $(@D)
-	ln -s ../.. $@
-
 install:
 	install -d "$(DESTDIR)$(INCLUDEDIR)/cp/src" "$(DESTDIR)$(LICENSEDIR)"
-	install -m 0644 $(headers) "$(DESTDIR)$(INCLUDEDIR)/cp"
+	install -m 0644 $(public_headers) "$(DESTDIR)$(INCLUDEDIR)/cp"
 	install -m 0644 $(source_headers) "$(DESTDIR)$(INCLUDEDIR)/cp/src"
 	install -m 0644 LICENSE "$(DESTDIR)$(LICENSEDIR)/LICENSE"
 
