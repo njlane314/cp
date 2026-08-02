@@ -1,0 +1,17 @@
+#pragma once
+
+// <cp/fenwick> — point updates and additive range sums
+//
+//   cp::fenwick_tree<cp::i64> sums(values);
+//   sums.add(position, delta);
+//   auto answer = sums.sum(first, last);
+//
+// Indices: zero-based
+// Ranges:  [first, last)
+// Build:   O(n)
+// add:     O(log n)
+// sum:     O(log n)
+//
+// Keywords: BIT, binary indexed tree, prefix sum
+
+#include <cp/detail/fenwick.hpp>

@@ -1,0 +1,10 @@
+#pragma once
+
+// <cp/utility> — small value-update helpers
+//
+//   cp::chmin(value, candidate);
+//   cp::chmax(value, candidate);
+//
+// chmin/chmax: O(1)
+
+#include <cp/detail/utility.hpp>

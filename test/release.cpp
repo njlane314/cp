@@ -1,5 +1,5 @@
-#include <cp/contract.hpp>
-#include <cp/modint.hpp>
+#include <cp/contract>
+#include <cp/modint>
 
 #include <cassert>
 

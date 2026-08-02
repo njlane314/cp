@@ -1,21 +1,7 @@
 #pragma once
 
-// <cp/segment_tree.hpp> — point replacement and associative range folds
-//
-//   auto ranges = cp::make_segment_tree(values, identity, combine);
-//   ranges.set(position, replacement);
-//   auto answer = ranges.fold(first, last);
-//
-// Indices: zero-based
-// Ranges:  [first, last)
-// Build:   O(n)
-// set:     O(log n)
-// fold:    O(log n)
-//
-// Keywords: range query, associative operation, monoid
-
-#include "cp/contract.hpp"
-#include "cp/types.hpp"
+#include <cp/detail/contract.hpp>
+#include <cp/detail/types.hpp>
 
 #include <concepts>
 #include <cstddef>

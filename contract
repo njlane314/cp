@@ -1,0 +1,10 @@
+#pragma once
+
+// <cp/contract> — local checks for violated preconditions
+//
+//   CP_EXPECT(0 <= position && position < size, "invalid position");
+//
+// Define LOCAL for diagnostic checks. Submission builds preserve type checking
+// but evaluate neither macro argument.
+
+#include <cp/detail/contract.hpp>

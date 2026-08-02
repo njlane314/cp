@@ -1,0 +1,16 @@
+#pragma once
+
+// <cp/disjoint> — union-find with component sizes
+//
+//   cp::disjoint_set components(count);
+//   components.merge(first, second);
+//   if (components.same(first, second)) { /* ... */ }
+//
+// Indices: zero-based
+// Build:   O(n)
+// find:    amortized O(alpha(n))
+// merge:   amortized O(alpha(n))
+//
+// Keywords: DSU, union-find, dynamic connectivity
+
+#include <cp/detail/disjoint.hpp>

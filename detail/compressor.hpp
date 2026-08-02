@@ -1,22 +1,7 @@
 #pragma once
 
-// <cp/coordinate_compressor.hpp> — sorted ranks for arbitrary values
-//
-//   cp::coordinate_compressor coordinates(values);
-//   auto compressed = coordinates.rank(value);
-//   const auto original = coordinates.value(compressed);
-//
-// Indices: zero-based
-// Build:   O(n log n)
-// rank:    O(log n)
-// value:   O(1)
-//
-// Keywords: coordinate compression, rank, discretization
-// Precondition: rank(x) requires x to occur in the construction range.
-// Round trip: value(rank(x)) is comparator-equivalent to x.
-
-#include "cp/contract.hpp"
-#include "cp/types.hpp"
+#include <cp/detail/contract.hpp>
+#include <cp/detail/types.hpp>
 
 #include <algorithm>
 #include <concepts>

@@ -1,15 +1,15 @@
 #define LOCAL
 
-#include <cp/contract.hpp>
-#include <cp/coordinate_compressor.hpp>
-#include <cp/disjoint_set.hpp>
-#include <cp/fenwick_tree.hpp>
-#include <cp/kmp_matcher.hpp>
-#include <cp/modint.hpp>
-#include <cp/recursive.hpp>
-#include <cp/segment_tree.hpp>
-#include <cp/types.hpp>
-#include <cp/utility.hpp>
+#include <cp/compressor>
+#include <cp/contract>
+#include <cp/disjoint>
+#include <cp/fenwick>
+#include <cp/kmp>
+#include <cp/modint>
+#include <cp/recursive>
+#include <cp/segment>
+#include <cp/types>
+#include <cp/utility>
 
 #include <algorithm>
 #include <array>

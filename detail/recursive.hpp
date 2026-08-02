@@ -1,19 +1,5 @@
 #pragma once
 
-// <cp/recursive.hpp> — recursive lambdas without std::function
-//
-//   auto dfs = cp::recursive(
-//       [&](auto& self, int vertex, int parent) -> void {
-//           for (int next : graph[vertex])
-//               if (next != parent) self(next, vertex);
-//       });
-//   dfs(source, -1);
-//
-// Construction: O(1)
-// Call:         the wrapped callable's cost
-//
-// Recursive callables must state their return type explicitly.
-
 #include <functional>
 #include <type_traits>
 #include <utility>

@@ -1,17 +1,6 @@
 #pragma once
 
-// <cp/modint.hpp> — integers modulo a compile-time constant
-//
-//   using mint = cp::modint<1'000'000'007>;
-//   mint value = 2;
-//   auto power = value.pow(10);
-//   if (auto inverse = value.try_inverse()) { /* ... */ }
-//
-// Arithmetic:  O(1)
-// pow:         O(log exponent)
-// try_inverse: O(log modulus)
-
-#include "cp/types.hpp"
+#include <cp/detail/types.hpp>
 
 #include <concepts>
 #include <cstdint>

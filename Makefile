@@ -3,7 +3,7 @@ CPPFLAGS ?=
 CXXFLAGS ?= -std=c++20 -Wall -Wextra -Wpedantic -Werror
 PREFIX ?= /usr/local
 INCLUDEDIR ?= $(PREFIX)/include
-LICENSEDIR ?= $(PREFIX)/share/licenses/cp
+LICENSEDIR ?= $(PREFIX)/share/licenses/libcp
 
 ifeq ($(origin CXX),default)
 ifneq ($(wildcard /opt/homebrew/opt/llvm/bin/clang++),)
@@ -13,8 +13,9 @@ CXX := /usr/local/opt/llvm/bin/clang++
 endif
 endif
 
-headers := contract.hpp coordinate_compressor.hpp disjoint_set.hpp fenwick_tree.hpp \
-	kmp_matcher.hpp modint.hpp recursive.hpp segment_tree.hpp types.hpp utility.hpp
+headers := contract compressor disjoint fenwick kmp modint recursive segment types utility
+detail_headers := $(addprefix detail/,$(addsuffix .hpp,$(headers)))
+all_headers := $(headers) $(detail_headers)
 build := .build
 include_dir := $(build)/include
 tests := $(build)/test $(build)/release
@@ -23,11 +24,11 @@ tests := $(build)/test $(build)/release
 .PHONY: check install clean
 
 check: $(tests)
-	@for header in $(headers); do \
+	@for header in $(all_headers); do \
 		printf '#include <cp/%s>\nint main() {}\n' "$$header" | \
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - || exit; \
 	done
-	@if printf '#include <cp/contract.hpp>\nint main() { CP_EXPECT(true, 42); }\n' | \
+	@if printf '#include <cp/contract>\nint main() { CP_EXPECT(true, 42); }\n' | \
 		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) -x c++ -fsyntax-only - \
 		>$(build)/contract-type.log 2>&1; then \
 		exit 1; \
@@ -46,8 +47,15 @@ check: $(tests)
 		grep -Fq "cp: $$message" "$$output"; grep -Fq '  expected: ' "$$output"; \
 		grep -Fq '  at: ' "$$output"; \
 	done
+	@rm -rf "$(build)/install"
+	@$(MAKE) --no-print-directory install DESTDIR="$(CURDIR)/$(build)/install" PREFIX=/usr/local
+	@for header in $(headers); do \
+		printf '#include <cp/%s>\nint main() {}\n' "$$header" | \
+		$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I"$(build)/install/usr/local/include" \
+		-x c++ -fsyntax-only - || exit; \
+	done
 
-$(tests): $(build)/%: test/%.cpp $(headers) | $(include_dir)/cp
+$(tests): $(build)/%: test/%.cpp $(all_headers) | $(include_dir)/cp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(include_dir) $< -o $@
 
 $(build)/test: test/test.cpp
@@ -57,8 +65,9 @@ $(include_dir)/cp:
 	ln -s ../.. $@
 
 install:
-	install -d "$(DESTDIR)$(INCLUDEDIR)/cp" "$(DESTDIR)$(LICENSEDIR)"
+	install -d "$(DESTDIR)$(INCLUDEDIR)/cp/detail" "$(DESTDIR)$(LICENSEDIR)"
 	install -m 0644 $(headers) "$(DESTDIR)$(INCLUDEDIR)/cp"
+	install -m 0644 $(detail_headers) "$(DESTDIR)$(INCLUDEDIR)/cp/detail"
 	install -m 0644 LICENSE "$(DESTDIR)$(LICENSEDIR)/LICENSE"
 
 clean:

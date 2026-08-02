@@ -1,18 +1,7 @@
 #pragma once
 
-// <cp/kmp_matcher.hpp> — linear-time byte-string pattern matching
-//
-//   cp::kmp_matcher matcher(pattern);
-//   auto positions = matcher.find_all(text);
-//
-// Indices: zero-based
-// Build:   O(pattern length)
-// find_all: O(text length)
-//
-// Keywords: KMP, prefix function, substring search
-
-#include "cp/contract.hpp"
-#include "cp/types.hpp"
+#include <cp/detail/contract.hpp>
+#include <cp/detail/types.hpp>
 
 #include <cstddef>
 #include <limits>

@@ -1,12 +1,5 @@
 #pragma once
 
-// <cp/types.hpp> — shared integer and index types
-//
-//   cp::index_type position = 0;
-//   cp::i64 total = 0;
-//
-// Public indices are signed and zero-based throughout the library.
-
 #include <cstdint>
 
 namespace cp {
